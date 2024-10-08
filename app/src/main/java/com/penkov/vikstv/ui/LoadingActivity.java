@@ -1,4 +1,4 @@
-package com.penkov.vikstv.activities;
+package com.penkov.vikstv.ui;
 
 import android.content.Intent;
 import android.os.Bundle;

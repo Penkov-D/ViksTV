@@ -3,4 +3,6 @@
     <string name="loading">Loading...</string>
     <string name="refresh_button_description">Refresh Button</string>
     <string name="loading_imageview_description">Loading Image</string>
+    <string name="icon">icon</string>
+    <string name="null_channel_name">null</string>
 </resources>
