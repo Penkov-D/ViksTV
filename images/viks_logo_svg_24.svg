@@ -1,0 +1,17 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    height="512"
+    width="512"
+    viewBox="0 0 20 20">
+
+    <!-- Letter 'V' -->
+    <path
+        fill="#FFFFFF"
+        d="M1,1 L8,19 L12,19 L5,1 Z M15,1 L8,19 L12,19 L19,1 Z" />
+
+    <!-- Triangle on top -->
+    <path
+        fill="#00B58B"
+        d="M7,1 L13,1 L10,8 Z" />
+
+</svg>

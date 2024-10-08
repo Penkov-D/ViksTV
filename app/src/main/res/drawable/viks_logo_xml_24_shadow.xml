@@ -1,0 +1,23 @@
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp"
+    android:width="24dp"
+    android:viewportHeight="60"
+    android:viewportWidth="60">
+
+    <!-- Shadow -->
+    <path
+        android:fillColor="@color/logo_shadow"
+        android:pathData="M28,39 L21,21 L25,21 L29,25 L27,21 L33,21 L35,23 L35,21 L39,21 L79,61 L72,79 L68,79 Z" />
+
+    <!-- Letter 'V' -->
+    <path
+        android:fillColor="@color/logo_white_v"
+        android:pathData="M21,21 L28,39 L32,39 L25,21 Z M35,21 L28,39 L32,39 L39,21 Z" />
+
+    <!-- Triangle on top -->
+    <path
+        android:fillColor="@color/logo_green_triangle"
+        android:pathData="M27,21 L33,21 L30,28 Z" />
+    
+</vector>

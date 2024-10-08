@@ -1,0 +1,23 @@
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    height="512"
+    width="512"
+    viewBox="0 0 60 60">
+
+    <!-- Shadow -->
+    <path
+        fill="#000000"
+        opacity="30%"
+        d="M28,39 L21,21 L25,21 L29,25 L27,21 L33,21 L35,23 L35,21 L39,21 L109,91 L102,109 L98,109 Z" />
+
+    <!-- Letter 'V' -->
+    <path
+        fill="#FFFFFF"
+        d="M21,21 L28,39 L32,39 L25,21 Z M35,21 L28,39 L32,39 L39,21 Z" />
+
+    <!-- Triangle on top -->
+    <path
+        fill="#00B58B"
+        d="M27,21 L33,21 L30,28 Z" />
+
+</svg>

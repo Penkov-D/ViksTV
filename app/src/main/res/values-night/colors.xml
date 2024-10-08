@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dark theme colors -->
+
+    <color name="refresh_button_arrow_color">#FFFFFF</color>
+    <color name="refresh_button_border_color">#FFFFFF</color>
+
+</resources>

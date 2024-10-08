@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Light theme colors -->
+
+    <color name="refresh_button_arrow_color">#000000</color>
+    <color name="refresh_button_border_color">#000000</color>
+
+    <!-- Logo colors -->
+    <color name="logo_white_v">#FFFFFF</color>
+    <color name="logo_green_triangle">#00B58B</color>
+    <color name="logo_grey_background">#4E626A</color>
+    <color name="logo_shadow">#40000000</color>
+
+</resources>
