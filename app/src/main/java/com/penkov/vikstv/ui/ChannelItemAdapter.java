@@ -21,6 +21,10 @@ public class ChannelItemAdapter
     // Channel list
     private final ArrayList<ChannelInfo> mChannels;
 
+    // Item focused
+    private static final int NO_FOCUS = -1;
+    private int positionFocused = NO_FOCUS;
+
 
     /**
      * Channel adapter constructor.
@@ -50,7 +54,7 @@ public class ChannelItemAdapter
         View view = inflater.inflate(R.layout.view_channel_item, parent, false);
 
         // Wrap the view with the view holder
-        return new ChannelItemViewHolder(view);
+        return new ChannelItemViewHolder(this, view);
     }
 
 
@@ -79,5 +83,24 @@ public class ChannelItemAdapter
     public int getItemCount()
     {
         return this.mChannels.size();
+    }
+
+
+    /**
+     * Set which item is now focused.
+     *
+     * @param position  the item adapter position
+     * @param haveFocus true if the item got focus, false if it lost focus.
+     */
+    public void informFocused(int position, boolean haveFocus)
+    {
+        // If item got focus, mark it
+        if (haveFocus)
+            this.positionFocused = position;
+
+        // If the focused item have no focus,
+        //   then no item in focus.
+        else if (this.positionFocused == position)
+            this.positionFocused = NO_FOCUS;
     }
 }

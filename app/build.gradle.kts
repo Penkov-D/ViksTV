@@ -35,6 +35,10 @@ dependencies {
     // jsoup HTML parser library @ https://jsoup.org/
     implementation(libs.jsoup)
 
+    implementation(libs.media3.common)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.exoplayer.hls)
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)

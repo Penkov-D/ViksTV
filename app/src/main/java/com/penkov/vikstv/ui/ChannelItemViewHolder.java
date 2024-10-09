@@ -3,13 +3,10 @@ package com.penkov.vikstv.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +22,9 @@ public class ChannelItemViewHolder
 {
     // TAG to use with logcat
     private static final String TAG = "ChannelItemViewHolder";
+
+    // Adapter created this ViewHolder
+    private final ChannelItemAdapter mChannelAdapter;
 
     // Channel this item represents
     private ChannelInfo mChannelInfo = null;
@@ -44,12 +44,15 @@ public class ChannelItemViewHolder
      *
      * @param itemView the view constructed from this channel.
      */
-    public ChannelItemViewHolder(@NonNull View itemView)
+    public ChannelItemViewHolder(@NonNull ChannelItemAdapter adapter, @NonNull View itemView)
     {
         super(itemView);
 
-        // Set onClick listener
+        this.mChannelAdapter = adapter;
+
+        // Set onClick and onFocusChange listener
         itemView.setOnClickListener(this::onClick);
+        itemView.setOnFocusChangeListener(this::onFocusChange);
 
         // Set local items
         this.mChannelIconImageView = itemView.findViewById(R.id.imageViewChannelIcon);
@@ -80,6 +83,19 @@ public class ChannelItemViewHolder
             loadImage(channelInfo);
             mChannelNameTextView.setText(channelInfo.getChannelName());
         }
+    }
+
+
+    /**
+     * Called when the card is focused or unfocused.
+     *
+     * @param view     the view that is focused
+     * @param hasFocus if the view is focused, or unfocused
+     */
+    private void onFocusChange(View view, boolean hasFocus)
+    {
+        // Inform the adapter about the focus change
+        mChannelAdapter.informFocused(getAdapterPosition(), hasFocus);
     }
 
 
@@ -115,8 +131,6 @@ public class ChannelItemViewHolder
      */
     private void loadImage(@NonNull ChannelInfo channelInfo)
     {
-        setIsRecyclable(false);
-
         // Scrap the channel icon
         new ChannelIconScrapper(
                 channelInfo.getChannelIconReference(),
@@ -125,15 +139,16 @@ public class ChannelItemViewHolder
                     @Override
                     public void onResult(@NonNull Bitmap icon)
                     {
-                        updateIcon(icon);
-                        setIsRecyclable(true);
+                        if (mChannelInfo == channelInfo)
+                            updateIcon(icon);
+                        else
+                            icon.recycle();
                     }
 
                     @Override
                     public void onError(@NonNull Exception exception)
                     {
                         iconLoadingError(exception);
-                        setIsRecyclable(true);
                     }
                 }
         ).load();

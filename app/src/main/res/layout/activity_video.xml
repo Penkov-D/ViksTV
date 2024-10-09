@@ -5,17 +5,41 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.VideoActivity">
+    tools:context=".ui.VideoActivity"
+    android:keepScreenOn="true"
+    >
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="VideoActivity"
+    <SurfaceView
+        android:id="@+id/channelVideoSurfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/channelVideoLoadingImage"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_margin="8dp"
+        android:translationZ="1.0dp"
+        android:visibility="visible"
+        android:contentDescription="@string/loading_dot"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:src="@drawable/baseline_circle_24"
+        />
+
+    <TextView
+        android:id="@+id/channelVideoLoadingText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:translationZ="1.0dp"
+        app:layout_constraintLeft_toRightOf="@id/channelVideoLoadingImage"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
 
