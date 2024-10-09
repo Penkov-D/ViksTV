@@ -15,10 +15,10 @@
 
     <application
         android:allowBackup="true"
+        android:banner="@mipmap/ic_banner"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:banner="@mipmap/ic_banner"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -38,6 +38,10 @@
 
         <activity
             android:name=".ui.MainActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.VideoActivity"
             android:exported="false" />
 
     </application>

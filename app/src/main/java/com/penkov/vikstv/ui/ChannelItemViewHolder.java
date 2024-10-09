@@ -1,6 +1,7 @@
 package com.penkov.vikstv.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Handler;
@@ -47,6 +48,10 @@ public class ChannelItemViewHolder
     {
         super(itemView);
 
+        // Set onClick listener
+        itemView.setOnClickListener(this::onClick);
+
+        // Set local items
         this.mChannelIconImageView = itemView.findViewById(R.id.imageViewChannelIcon);
         this.mChannelNameTextView = itemView.findViewById(R.id.textViewChannelName);
     }
@@ -79,42 +84,89 @@ public class ChannelItemViewHolder
 
 
     /**
+     * Called when the card is clicked, activates the VideoActivity.
+     *
+     * @param view the view that called this method.
+     */
+    private void onClick(View view)
+    {
+        // If no channel info - do notting
+        if (mChannelInfo == null)
+            return;
+
+        // Start the activity
+        Context context = view.getContext();
+
+        context.startActivity(
+                new Intent(
+                        context,
+                        VideoActivity.class
+                ).putExtra(
+                        VideoActivity.CHANNEL,
+                        mChannelInfo
+                )
+        );
+    }
+
+
+    /**
      * Load icon for the channel card.
      *
      */
     private void loadImage(@NonNull ChannelInfo channelInfo)
     {
         setIsRecyclable(false);
+
+        // Scrap the channel icon
         new ChannelIconScrapper(
                 channelInfo.getChannelIconReference(),
-                new ChannelIconListener() {
+                new ChannelIconListener()
+                {
                     @Override
-                    public void onResult(@NonNull Bitmap bitmap)
+                    public void onResult(@NonNull Bitmap icon)
                     {
-                        if (mChannelInfo != channelInfo) {
-                            bitmap.recycle();
-                            return;
-                        }
-
-                        if (mChannelIcon != null)
-                            mChannelIcon.recycle();
-
-                        mChannelIcon = bitmap;
-                        mChannelIconImageView.setImageBitmap(bitmap);
+                        updateIcon(icon);
                         setIsRecyclable(true);
                     }
 
                     @Override
                     public void onError(@NonNull Exception exception)
                     {
-                        Log.w(TAG,
-                                String.format(
-                                        "Could not load icon of channel: \"%s\"",
-                                        channelInfo.getChannelName()),
-                                exception);
+                        iconLoadingError(exception);
                         setIsRecyclable(true);
                     }
                 }
         ).load();
+    }
+
+
+    /**
+     * Update the channel icon, and manage resources.
+     *
+     * @param icon bitmap to set for the channel card.
+     */
+    private void updateIcon(@NonNull Bitmap icon)
+    {
+        // Clean the previous icon
+        if (mChannelIcon != null)
+            mChannelIcon.recycle();
+
+        // Set the new icon
+        mChannelIcon = icon;
+        mChannelIconImageView.setImageBitmap(icon);
+    }
+
+
+    /**
+     * Default process to make when icon loading failed.
+     *
+     * @param e exception describing what got wrong.
+     */
+    private void iconLoadingError(@NonNull Exception e)
+    {
+        // Post the error over logcat
+        Log.w(TAG, String.format(
+                "Could not load icon of channel: \"%s\"",
+                mChannelInfo.getChannelName()), e);
     }
 }
