@@ -25,7 +25,10 @@ import androidx.media3.exoplayer.ExoPlayer;
 
 import com.penkov.vikstv.R;
 import com.penkov.vikstv.core.ChannelInfo;
+import com.penkov.vikstv.core.ChannelProgram;
+import com.penkov.vikstv.web.Listener.ChannelProgramListener;
 import com.penkov.vikstv.web.Listener.ChannelVideoUrlListener;
+import com.penkov.vikstv.web.Scrapper.ChannelProgramScrapper;
 import com.penkov.vikstv.web.Scrapper.ChannelVideoUrlScrapper;
 
 import java.io.IOException;
@@ -46,6 +49,9 @@ public class VideoActivity extends AppCompatActivity
     private SurfaceView mVideoSurfaceView = null;
     private ImageView mVideoLoadingImage = null;
     private TextView mVideoLoadingText = null;
+    private TextView mProgramsText = null;
+
+    private boolean mProggramShown = false;
 
 
     @Override
@@ -72,6 +78,9 @@ public class VideoActivity extends AppCompatActivity
         this.mVideoSurfaceView = findViewById(R.id.channelVideoSurfaceView);
         this.mVideoLoadingImage = findViewById(R.id.channelVideoLoadingImage);
         this.mVideoLoadingText = findViewById(R.id.channelVideoLoadingText);
+        this.mProgramsText = findViewById(R.id.channelProgramsTextView);
+
+        this.mVideoSurfaceView.setOnClickListener(this::toggleProgramView);
 
         // this.mVideoLoadingImage.setVisibility(View.INVISIBLE);
 
@@ -99,6 +108,23 @@ public class VideoActivity extends AppCompatActivity
                     }
                 }
         ).load();
+
+        // Load the programs
+        new ChannelProgramScrapper(
+                this.mChannelInfo.getChannelReference(),
+                new ChannelProgramListener() {
+                    @Override
+                    public void onResult(@NonNull ChannelProgram[] channelPrograms) {
+                        runOnUiThread(() -> onProgramsLoaded(channelPrograms));
+                    }
+
+                    @Override
+                    public void onError(@NonNull Exception exception) {
+                        runOnUiThread(() -> onProgramsError(exception));
+                    }
+                }
+        ).load();
+
     }
 
 
@@ -122,6 +148,21 @@ public class VideoActivity extends AppCompatActivity
 
 
     /**
+     * Called whenever the program view is need to be toggled.
+     *
+     * @param v the view from onClick was called (equal mVideoSurfaceView)
+     */
+    private void toggleProgramView(View v)
+    {
+        // Toggle the view
+        this.mProggramShown = !this.mProggramShown;
+
+        // Set the textview visibility accordingly
+        this.mProgramsText.setVisibility(this.mProggramShown ? View.VISIBLE : View.INVISIBLE);
+    }
+
+
+    /**
      * Called when video url is available.
      *
      * @param url the url of the video.
@@ -129,69 +170,15 @@ public class VideoActivity extends AppCompatActivity
     private void onVideoUrlLoaded(String url)
     {
         this.mExoPlayer = new ExoPlayer.Builder(this).build();
+
         this.mExoPlayer.setVideoSurfaceView(mVideoSurfaceView);
+        this.mExoPlayer.addListener(new ExoPlayerListener());
 
         MediaItem mediaItem = MediaItem.fromUri(url);
 
         this.mExoPlayer.setMediaItem(mediaItem);
         this.mExoPlayer.prepare();
         this.mExoPlayer.setPlayWhenReady(true);
-
-        this.mExoPlayer.addListener(
-                new Player.Listener() {
-                    @Override
-                    public void onIsLoadingChanged(boolean isLoading) {
-                        Player.Listener.super.onIsLoadingChanged(isLoading);
-
-                        if (isLoading)
-                            mVideoLoadingImage.setVisibility(View.VISIBLE);
-                        else
-                            mVideoLoadingImage.setVisibility(View.INVISIBLE);
-                    }
-
-                    @Override
-                    public void onPlayerError(@NonNull PlaybackException error)
-                    {
-                        Toast.makeText(
-                                VideoActivity.this,
-                                error.toString(),
-                                Toast.LENGTH_SHORT
-                        ).show();
-                        finish();
-                    }
-
-                    @Override
-                    public void onIsPlayingChanged(boolean isPlaying) {
-                        Player.Listener.super.onIsPlayingChanged(isPlaying);
-
-                        if (!isPlaying)
-                            mVideoLoadingImage.setVisibility(View.VISIBLE);
-                        else
-                            mVideoLoadingImage.setVisibility(View.INVISIBLE);
-                    }
-                }
-        );
-
-    }
-
-
-    /**
-     * TODO: add description.
-     *
-     * @param mp
-     * @param what
-     * @param extra
-     * @return
-     */
-    private boolean onMediaPlayerError(MediaPlayer mp, int what, int extra)
-    {
-        Toast.makeText(
-                this,
-                what + " : " + extra,
-                Toast.LENGTH_SHORT
-        ).show();
-
-        return false;
     }
 
 
@@ -200,12 +187,74 @@ public class VideoActivity extends AppCompatActivity
      *
      * @param e exception representing what happened.
      */
-    private void onVideoUrlError(Exception e)
+    private void onVideoUrlError(@NonNull Exception e)
     {
+        // Show the url error message
         Toast.makeText(
                 this,
                 "Video Loading Error: " + e.toString(),
                 Toast.LENGTH_LONG
         ).show();
+
+        // Finish the video activity
+        finish();
+    }
+
+
+    private void onProgramsLoaded(@NonNull ChannelProgram[] programs)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        for (ChannelProgram program : programs)
+            sb.append(program.getTime()).append(" | ").append(program.getName()).append('\n');
+
+        this.mProgramsText.setText(sb.toString());
+    }
+
+
+    private void onProgramsError(@NonNull Exception e)
+    {
+        this.mProgramsText.setText(e.getMessage());
+    }
+
+
+    /**
+     * ExoPlayer listener on various events
+     */
+    private class ExoPlayerListener implements Player.Listener
+    {
+        @Override
+        public void onIsLoadingChanged(boolean isLoading)
+        {
+            // Set the dot to be seen when loading
+            mVideoLoadingImage.setVisibility(isLoading ? View.VISIBLE : View.INVISIBLE);
+
+            // Do the default behaviour
+            Player.Listener.super.onIsLoadingChanged(isLoading);
+        }
+
+        @Override
+        public void onPlayerError(@NonNull PlaybackException error)
+        {
+            // Print the error message
+            Toast.makeText(
+                    VideoActivity.this,
+                    error.toString(),
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            // Finish the video player
+            finish();
+        }
+
+        @Override
+        public void onIsPlayingChanged(boolean isPlaying)
+        {
+            // Set the dot to hidden when playing
+            mVideoLoadingImage.setVisibility(isPlaying ? View.INVISIBLE : View.VISIBLE);
+
+            // Do the default behaviour
+            Player.Listener.super.onIsPlayingChanged(isPlaying);
+        }
     }
 }

@@ -6,6 +6,7 @@
     <color name="refresh_button_arrow_color">#000000</color>
     <color name="refresh_button_border_color">#000000</color>
     <color name="channel_card_view_background">#E0E0E0</color>
+    <color name="programs_background_tint">#B2000000</color>
 
     <!-- Logo colors -->
     <color name="logo_white_v">#FFFFFF</color>
