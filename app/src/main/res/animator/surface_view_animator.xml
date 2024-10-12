@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_focused="true">
+        <objectAnimator
+            android:duration="300">
+            <propertyValuesHolder android:propertyName="cardForegroundColor" android:valueType="colorType"
+                android:valueFrom="@android:color/transparent"
+                android:valueTo="@android:color/transparent" />
+        </objectAnimator>
+    </item>
+
+    <item>
+        <objectAnimator
+            android:duration="300">
+            <propertyValuesHolder android:propertyName="cardForegroundColor" android:valueType="colorType"
+                android:valueFrom="@android:color/transparent"
+                android:valueTo="@android:color/transparent" />
+        </objectAnimator>
+    </item>
+
+</selector>

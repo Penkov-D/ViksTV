@@ -1,13 +1,18 @@
 package com.penkov.vikstv.ui;
 
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.penkov.vikstv.R;
@@ -24,6 +29,10 @@ public class ChannelItemAdapter
     // Item focused
     private static final int NO_FOCUS = -1;
     private int positionFocused = NO_FOCUS;
+    private boolean mNeedScroll = false;
+
+    // The recycler view of this adapter
+    private RecyclerView mRecyclerView = null;
 
 
     /**
@@ -86,21 +95,77 @@ public class ChannelItemAdapter
     }
 
 
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView)
+    {
+        super.onAttachedToRecyclerView(recyclerView);
+
+        this.mRecyclerView = recyclerView;
+        this.mRecyclerView.addOnScrollListener(new scrollContinuer());
+    }
+
     /**
      * Set which item is now focused.
      *
      * @param position  the item adapter position
      * @param haveFocus true if the item got focus, false if it lost focus.
      */
-    public void informFocused(int position, boolean haveFocus)
-    {
+    public void informFocused(int position, boolean haveFocus) {
         // If item got focus, mark it
         if (haveFocus)
             this.positionFocused = position;
 
-        // If the focused item have no focus,
-        //   then no item in focus.
+            // If the focused item have no focus,
+            //   then no item in focus.
         else if (this.positionFocused == position)
             this.positionFocused = NO_FOCUS;
+
+        // Scroll to the position
+        if (this.positionFocused == NO_FOCUS)
+            return;
+
+        if (this.mRecyclerView == null)
+            return;
+
+        // Smooth scroll if no scroll registered
+        if (this.mRecyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE)
+            this.mRecyclerView.smoothScrollToPosition(this.positionFocused);
+
+        // Wait for the scroll to end
+        else this.mNeedScroll = true;
+    }
+
+
+    private class scrollContinuer extends RecyclerView.OnScrollListener
+    {
+        // TODO: comment
+
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState)
+        {
+            super.onScrollStateChanged(recyclerView, newState);
+
+            if (newState != RecyclerView.SCROLL_STATE_IDLE) return;
+            if (positionFocused == NO_FOCUS) return;
+            if (!mNeedScroll) return;
+
+            RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
+            if (layoutManager == null) return;
+
+            if (!(layoutManager instanceof LinearLayoutManager)) return;
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+
+            LinearSmoothScroller smoothScroller =
+                    new LinearSmoothScroller(recyclerView.getContext())
+                    {
+                        @Override
+                        protected float calculateSpeedPerPixel(DisplayMetrics displayMetrics) {
+                            return 4.0f;
+                        }
+                    };
+
+            smoothScroller.setTargetPosition(positionFocused);
+            layoutManager.startSmoothScroll(smoothScroller);
+        }
     }
 }

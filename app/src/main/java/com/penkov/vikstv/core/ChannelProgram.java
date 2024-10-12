@@ -147,4 +147,35 @@ public class ChannelProgram
     public int getMinute() {
         return mProgramTimeMinute;
     }
+
+
+    /**
+     * Get time in compact form - minutes since midnight.
+     *
+     * @return minutes since midnight.
+     */
+    public int getCompactTime()
+    {
+        return getCompactTime(false);
+    }
+
+
+    /**
+     * Get time in compacted form - minutes since midnight.
+     *
+     * @param plusDay if to add a day to the result.
+     * @return minutes since midnight.
+     */
+    public int getCompactTime(boolean plusDay)
+    {
+        int time = 0;
+
+        time += getHour() * 60;
+        time += getMinute();
+
+        if (plusDay)
+            time += 24 * 60;
+
+        return time;
+    }
 }

@@ -1,11 +1,10 @@
 package com.penkov.vikstv.ui;
 
 import android.content.Context;
-import android.media.AudioAttributes;
-import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,6 +22,9 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.penkov.vikstv.R;
 import com.penkov.vikstv.core.ChannelInfo;
@@ -31,8 +33,6 @@ import com.penkov.vikstv.web.Listener.ChannelProgramListener;
 import com.penkov.vikstv.web.Listener.ChannelVideoUrlListener;
 import com.penkov.vikstv.web.Scrapper.ChannelProgramScrapper;
 import com.penkov.vikstv.web.Scrapper.ChannelVideoUrlScrapper;
-
-import java.io.IOException;
 
 public class VideoActivity extends AppCompatActivity
 {
@@ -51,9 +51,13 @@ public class VideoActivity extends AppCompatActivity
     private SurfaceView mVideoSurfaceView = null;
     private ImageView mVideoLoadingImage = null;
     private TextView mVideoLoadingText = null;
-    private TextView mProgramsText = null;
+    private RecyclerView mProgramsRecycler = null;
+    private ProgramItemAdapter mProgramAdapter = null;
 
-    private boolean mProggramShown = false;
+    private boolean mProgramShown = false;
+    private boolean mProgramSet = false;
+
+    private boolean mActivityPaused = false;
 
 
     @Override
@@ -80,7 +84,7 @@ public class VideoActivity extends AppCompatActivity
         this.mVideoSurfaceView = findViewById(R.id.channelVideoSurfaceView);
         this.mVideoLoadingImage = findViewById(R.id.channelVideoLoadingImage);
         this.mVideoLoadingText = findViewById(R.id.channelVideoLoadingText);
-        this.mProgramsText = findViewById(R.id.channelProgramsTextView);
+        this.mProgramsRecycler = findViewById(R.id.channelPrograms_recycleView);
 
         this.mVideoSurfaceView.setOnClickListener(this::toggleProgramView);
 
@@ -131,6 +135,39 @@ public class VideoActivity extends AppCompatActivity
 
 
     @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        // Release the media player
+        if (this.mExoPlayer != null) {
+            this.mExoPlayer.release();
+            this.mExoPlayer = null;
+        }
+
+        this.mActivityPaused = true;
+    }
+
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        // Check if this was called after a pause
+        if (!this.mActivityPaused) return;
+        this.mActivityPaused = false;
+
+        // Restart the media player
+        if (this.mVideoURL != null)
+            onVideoUrlLoaded(null);
+
+        // If no URL probably a bug
+        else finish();
+    }
+
+
+    @Override
     protected void onDestroy()
     {
         super.onDestroy();
@@ -149,6 +186,19 @@ public class VideoActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event)
+    {
+        // In case of DPAD_CENTER,
+        if (event.getAction() == KeyEvent.ACTION_UP
+                && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_CENTER) {
+            toggleProgramView(this.mVideoSurfaceView);
+            return true;
+        }
+
+        return super.dispatchKeyEvent(event);
+    }
+
     /**
      * Called whenever the program view is need to be toggled.
      *
@@ -156,11 +206,18 @@ public class VideoActivity extends AppCompatActivity
      */
     private void toggleProgramView(View v)
     {
+        // Open the program list only if they are set.
+        if (!this.mProgramSet) return;
+
         // Toggle the view
-        this.mProggramShown = !this.mProggramShown;
+        this.mProgramShown = !this.mProgramShown;
 
         // Set the textview visibility accordingly
-        this.mProgramsText.setVisibility(this.mProggramShown ? View.VISIBLE : View.INVISIBLE);
+        this.mProgramsRecycler.setVisibility(this.mProgramShown ? View.VISIBLE : View.GONE);
+        this.mProgramAdapter.updateView(this.mProgramsRecycler);
+
+        if (!this.mProgramShown)
+            this.mVideoSurfaceView.requestFocus();
     }
 
 
@@ -212,20 +269,37 @@ public class VideoActivity extends AppCompatActivity
     }
 
 
+    @Override
+    public void onBackPressed()
+    {
+        if (this.mProgramShown)
+            toggleProgramView(this.mVideoSurfaceView);
+
+        else
+            super.onBackPressed();
+    }
+
+
     private void onProgramsLoaded(@NonNull ChannelProgram[] programs)
     {
-        StringBuilder sb = new StringBuilder();
+        // Call the recycler view adapter
+        this.mProgramAdapter = new ProgramItemAdapter(programs);
 
-        for (ChannelProgram program : programs)
-            sb.append(program.getTime()).append(" | ").append(program.getName()).append('\n');
+        this.mProgramsRecycler.setLayoutManager(new LinearLayoutManager(this));
+        this.mProgramsRecycler.setAdapter(this.mProgramAdapter);
 
-        this.mProgramsText.setText(sb.toString());
+        if (programs.length > 0)
+            this.mProgramSet = true;
     }
 
 
     private void onProgramsError(@NonNull Exception e)
     {
-        this.mProgramsText.setText(e.getMessage());
+        Toast.makeText(
+                this,
+                "Error loading programs: " + e.toString(),
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
 

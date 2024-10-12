@@ -49,7 +49,7 @@ public class LoadingActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         // For testing light theme on device
-        // AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_loading);

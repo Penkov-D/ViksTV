@@ -12,6 +12,13 @@
     <color name="channel_card_view_stroke">#282828</color>
     <color name="channel_card_view_stroke_highlight">#19FF23</color>
 
+    <color name="program_background_past">#B3313131</color>
+    <color name="program_background_present">#B3313131</color>
+    <color name="program_background_future">#B3313131</color>
+    <color name="program_stroke_color">#373737</color>
+    <color name="program_text_color">#DCDCDC</color>
+    <color name="program_stroke_highlight_color">#FF8000</color>
+70
     <!-- Logo colors -->
     <color name="logo_white_v">#FFFFFF</color>
     <color name="logo_green_triangle">#00B58B</color>
