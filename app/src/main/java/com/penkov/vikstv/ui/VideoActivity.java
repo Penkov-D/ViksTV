@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -44,6 +45,7 @@ public class VideoActivity extends AppCompatActivity
     // Local variables
     private ChannelInfo mChannelInfo = null;
     private ExoPlayer mExoPlayer = null;
+    private String mVideoURL = null;
     private WifiManager.WifiLock mWifiLock = null;
 
     private SurfaceView mVideoSurfaceView = null;
@@ -164,11 +166,20 @@ public class VideoActivity extends AppCompatActivity
 
     /**
      * Called when video url is available.
+     * If the url is null, called with the previous link.
      *
      * @param url the url of the video.
      */
-    private void onVideoUrlLoaded(String url)
+    private void onVideoUrlLoaded(@Nullable String url)
     {
+        // Release the previous player (in case of reload)
+        if (this.mExoPlayer != null)
+            this.mExoPlayer.release();
+
+        // Load previous url if needed
+        if (url == null) url = this.mVideoURL;
+        else this.mVideoURL = url;
+
         this.mExoPlayer = new ExoPlayer.Builder(this).build();
 
         this.mExoPlayer.setVideoSurfaceView(mVideoSurfaceView);
@@ -244,7 +255,10 @@ public class VideoActivity extends AppCompatActivity
             ).show();
 
             // Finish the video player
-            finish();
+            //finish();
+
+            // Try again to load the video
+            onVideoUrlLoaded(null);
         }
 
         @Override
