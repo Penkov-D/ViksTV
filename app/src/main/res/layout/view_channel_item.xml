@@ -6,6 +6,7 @@
     android:layout_margin="4dp"
     android:focusable="true"
     android:clickable="true"
+    app:strokeWidth="1dp"
     android:stateListAnimator="@animator/channel_card_animator"
     app:cardBackgroundColor="@color/channel_card_view_background"
     app:cardCornerRadius="24dp">

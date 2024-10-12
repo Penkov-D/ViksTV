@@ -3,25 +3,37 @@
 
     <item android:state_focused="true">
         <objectAnimator
-            android:duration="200"
-            android:valueType="floatType">
-            <propertyValuesHolder android:propertyName="scaleX" android:valueTo="1.03" />
-            <propertyValuesHolder android:propertyName="scaleY" android:valueTo="1.03" />
-            <propertyValuesHolder android:propertyName="strokeWidth" android:valueTo="2dp" />
-            <propertyValuesHolder android:propertyName="strokeColor" android:valueTo="#F57C00" />
-            <propertyValuesHolder android:propertyName="Z" android:valueTo="2.0" />
+            android:duration="300">
+            <propertyValuesHolder android:propertyName="scaleX" android:valueTo="1.03" android:valueType="floatType" />
+            <propertyValuesHolder android:propertyName="scaleY" android:valueTo="1.03" android:valueType="floatType"/>
+            <propertyValuesHolder android:propertyName="Z" android:valueTo="2.0" android:valueType="floatType"/>
+            <propertyValuesHolder android:propertyName="strokeWidth" android:valueTo="2.0dp" android:valueType="floatType" />
+            <propertyValuesHolder android:propertyName="strokeColor" android:valueType="colorType"
+                android:valueTo="@color/channel_card_view_stroke_highlight" />
+            <propertyValuesHolder android:propertyName="cardBackgroundColor" android:valueType="colorType"
+                android:valueFrom="@color/channel_card_view_background"
+                android:valueTo="@color/channel_card_view_background_highlight" />
+            <propertyValuesHolder android:propertyName="cardForegroundColor" android:valueType="colorType"
+                android:valueFrom="@android:color/transparent"
+                android:valueTo="@android:color/transparent" />
         </objectAnimator>
     </item>
 
     <item>
         <objectAnimator
-            android:duration="200"
-            android:valueType="floatType">
-            <propertyValuesHolder android:propertyName="scaleX" android:valueTo="1.0" />
-            <propertyValuesHolder android:propertyName="scaleY" android:valueTo="1.0" />
-            <propertyValuesHolder android:propertyName="strokeWidth" android:valueTo="1dp" />
-            <propertyValuesHolder android:propertyName="strokeColor" android:valueTo="#000000" />
-            <propertyValuesHolder android:propertyName="Z" android:valueTo="0.0" />
+            android:duration="300">
+            <propertyValuesHolder android:propertyName="scaleX" android:valueTo="1.0" android:valueType="floatType" />
+            <propertyValuesHolder android:propertyName="scaleY" android:valueTo="1.0" android:valueType="floatType"/>
+            <propertyValuesHolder android:propertyName="Z" android:valueTo="0.0" android:valueType="floatType"/>
+            <propertyValuesHolder android:propertyName="strokeWidth" android:valueTo="1.0dp" android:valueType="floatType" />
+            <propertyValuesHolder android:propertyName="strokeColor" android:valueType="colorType"
+                android:valueTo="@color/channel_card_view_stroke" />
+            <propertyValuesHolder android:propertyName="cardBackgroundColor" android:valueType="colorType"
+                android:valueFrom="@color/channel_card_view_background"
+                android:valueTo="@color/channel_card_view_background" />
+            <propertyValuesHolder android:propertyName="cardForegroundColor" android:valueType="colorType"
+                android:valueFrom="@android:color/transparent"
+                android:valueTo="@android:color/transparent" />
         </objectAnimator>
     </item>
 

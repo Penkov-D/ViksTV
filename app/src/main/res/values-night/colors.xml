@@ -5,6 +5,11 @@
 
     <color name="refresh_button_arrow_color">#FFFFFF</color>
     <color name="refresh_button_border_color">#FFFFFF</color>
+
     <color name="channel_card_view_background">#202020</color>
+    <color name="channel_card_view_background_highlight">#2A2420</color>
+    <color name="channel_card_view_stroke">#313131</color>
+    <color name="channel_card_view_stroke_highlight">#F57F00</color>
+
 
 </resources>

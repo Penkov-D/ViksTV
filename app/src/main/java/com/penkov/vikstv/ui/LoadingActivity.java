@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.penkov.vikstv.R;
 import com.penkov.vikstv.core.ChannelInfo;
@@ -46,6 +47,10 @@ public class LoadingActivity extends AppCompatActivity
     {
         // Basic view stuff
         super.onCreate(savedInstanceState);
+
+        // For testing light theme on device
+        // AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_loading);
 
