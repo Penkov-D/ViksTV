@@ -1,4 +1,4 @@
-package com.penkov.vikstv.web.Scrapper;
+package com.penkov.vikstv.web.Scraper;
 
 import android.util.Log;
 
@@ -6,9 +6,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.penkov.vikstv.core.ChannelInfo;
-import com.penkov.vikstv.web.Listener.ChannelListListener;
+import com.penkov.vikstv.web.Listener.ListenerChannelList;
 import com.penkov.vikstv.web.WebParsingException;
-import com.penkov.vikstv.web.base.GeneralScrapper;
+import com.penkov.vikstv.web.base.GeneralScraper;
 
 import org.jsoup.Connection;
 import org.jsoup.nodes.Element;
@@ -19,69 +19,66 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ChannelListScrapper
-    extends GeneralScrapper<ChannelInfo[], ChannelListListener>
+public class ScraperChannelList
+    extends GeneralScraper<ChannelInfo[], ListenerChannelList>
 {
-    // TAG to use with logcat
-    public static final String TAG = "ChannelListScrapper";
+    // TAG to use with logcat.
+    public static final String TAG = ScraperChannelList.class.getSimpleName();
 
-    // The url to get the channel list
+    // The url to get the channel list.
     public static final String URL = "http://ip.viks.tv";
 
-    // Constants used by the parser
+    // Constants used by the parser.
     private static final String LINK_TAG = "a";
     private static final String LINK_ATTR = "href";
     private static final String ICON_TAG = "img";
     private static final String ICON_ATTR = "src";
+    private static final String DIV_CHANNELS = "all_tv";
 
 
     /**
-     * Create new channel list scrapper.
+     * Create new channel list scraper.
      * This class responsible to retrieve all the channels available from the server.
      */
-    public ChannelListScrapper() {
+    public ScraperChannelList() {
         super(URL);
     }
 
 
     /**
-     * Create new channel list scrapper.
+     * Create new channel list scraper.
      * This class responsible to retrieve all the channels available from the server.
      *
-     * @param listener register listener on creation.
+     * @param listener register listener on creation. <br>
      *                 Equal to call {@code registerListener()}.
      */
-    public ChannelListScrapper(@NonNull ChannelListListener listener) {
+    public ScraperChannelList(@NonNull ListenerChannelList listener) {
         super(URL, listener);
     }
 
 
-    /**
-     * Try and convert the webpage to list of all the channels.
-     *
-     * @param response the webpage to process.
-     * @throws WebParsingException when the parsing didn't succeed from any reason.
-     */
+    @Override
     protected ChannelInfo[] processPage(@NonNull Connection.Response response)
             throws WebParsingException, IOException
     {
-        // Extract all channels by element
-        Elements channelsDiv = response.parse().getElementsByClass("all_tv");
+        // Extract all channels by element.
+        Elements channelsDiv = response.parse().getElementsByClass(DIV_CHANNELS);
+
         if (channelsDiv.isEmpty()) {
-            Log.e(TAG, "Scrapping didn't find channels list.");
-            throw new WebParsingException("No channels found, parsing error?");
+            Log.e(TAG, "Scraping didn't find channels list tag.");
+            throw new WebParsingException("No channels found.");
         }
 
-        // Store all the channels, in dynamic size, in case some fail.
+        // Store all the channels in dynamic list, if some channels fail.
         List<ChannelInfo> channelInfoList = new ArrayList<>(channelsDiv.size());
 
-        // Iterate the channels objects
+        // Iterate the channels objects.
         for (Element channelElement : channelsDiv)
         {
-            // Parse the channel
+            // Parse the channel.
             ChannelInfo channel = parseChannel(channelElement);
 
-            // Add the new channel to the list
+            // Add the new channel to the list.
             if (channel != null)
                 channelInfoList.add(channel);
         }
@@ -99,13 +96,13 @@ public class ChannelListScrapper
      */
     private @Nullable ChannelInfo parseChannel(@NonNull Element channelElement)
     {
-
-        // The element should contain only the channel name.
+        // The element should contain only the channel name by now.
         final String channelName = channelElement.text();
 
 
         // Get the link that should direct to the channel page.
         Element linkElement = channelElement.getElementsByTag(LINK_TAG).first();
+
         if (linkElement == null || !linkElement.hasAttr(LINK_ATTR)) {
             Log.v(TAG, "Found element without link: " + channelElement.outerHtml());
             return null;
@@ -116,6 +113,7 @@ public class ChannelListScrapper
 
         // Get the link that should direct to the channel icon.
         Element imageElement = channelElement.getElementsByTag(ICON_TAG).first();
+
         if (imageElement == null || !imageElement.hasAttr(ICON_ATTR)) {
             Log.v(TAG, "Found element without icon: " + channelElement.outerHtml());
             return null;
@@ -124,7 +122,7 @@ public class ChannelListScrapper
         final String channelIcon = URL + imageElement.attr(ICON_ATTR);
 
 
-        // Add the new channel to the list
+        // Create channel info object from the data.
         return new ChannelInfo(channelName, channelPage, channelIcon);
     }
 

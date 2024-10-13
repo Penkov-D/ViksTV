@@ -4,7 +4,7 @@ import com.penkov.vikstv.core.ChannelInfo;
 import com.penkov.vikstv.web.base.GeneralListener;
 
 /**
- * The listener over channel list request.
+ * Available channels list request listener.
  */
-public abstract class ChannelListListener
+public abstract class ListenerChannelList
         implements GeneralListener<ChannelInfo[]> { }

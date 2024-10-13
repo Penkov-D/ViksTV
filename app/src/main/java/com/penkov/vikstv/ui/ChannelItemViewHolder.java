@@ -14,8 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.penkov.vikstv.R;
 import com.penkov.vikstv.core.ChannelInfo;
-import com.penkov.vikstv.web.Listener.ChannelIconListener;
-import com.penkov.vikstv.web.Scrapper.ChannelIconScrapper;
+import com.penkov.vikstv.web.Listener.ListenerChannelIcon;
+import com.penkov.vikstv.web.Scraper.ScraperChannelIcon;
 
 public class ChannelItemViewHolder
         extends RecyclerView.ViewHolder
@@ -132,9 +132,9 @@ public class ChannelItemViewHolder
     private void loadImage(@NonNull ChannelInfo channelInfo)
     {
         // Scrap the channel icon
-        new ChannelIconScrapper(
+        new ScraperChannelIcon(
                 channelInfo.getChannelIconReference(),
-                new ChannelIconListener()
+                new ListenerChannelIcon()
                 {
                     @Override
                     public void onResult(@NonNull Bitmap icon)

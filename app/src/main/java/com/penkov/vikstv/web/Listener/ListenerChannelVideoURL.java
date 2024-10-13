@@ -3,7 +3,7 @@ package com.penkov.vikstv.web.Listener;
 import com.penkov.vikstv.web.base.GeneralListener;
 
 /**
- * The listener over video url requests.
+ * Channel's video url request listener.
  */
-public abstract class ChannelVideoUrlListener
+public abstract class ListenerChannelVideoURL
         implements GeneralListener<String> { }

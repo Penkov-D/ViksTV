@@ -10,45 +10,47 @@ import org.jsoup.Connection;
 
 import java.io.IOException;
 
-public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListener<Result>>
+public abstract class GeneralScraper<Result, ListenerClass extends GeneralListener<Result>>
 {
-    // The object tag to call with logcat.
-    public static final String TAG = "GeneralScrapper";
+    // TAG to use on logcat.
+    public static final String TAG = GeneralScraper.class.getSimpleName();
 
-    // The URL to connect to
+    // The URL to connect to.
     private final String mURL;
 
-    // Flag whether the scrapper is running
+    // Flag whether a scraper is running.
     private boolean mBackgroundThreadRunning = false;
 
-    // Holds the listener
+    // Holds the listener.
     private ListenerClass mListener = null;
     private final Object mListenerLock = new Object();
 
-    // Hold the result for caching
+    // Hold the result for caching.
     private Result mResult = null;
 
 
     /**
-     * Create new scrapper.
+     * Create new scraper.
      * This class responsible to retrieve {@code Result} from the server.
      *
-     * @param URL the url to connect to.
+     * @param URL the web page to connect to.
      */
-    public GeneralScrapper(@NonNull String URL) {
+    public GeneralScraper(@NonNull String URL)
+    {
         this.mURL = URL;
     }
 
 
     /**
-     * Create new scrapper.
+     * Create new scraper.
      * This class responsible to retrieve {@code Result} from the server.
      *
-     * @param URL the url to connect to.
-     * @param listener register listener on creation.
+     * @param URL      the web page to connect to.
+     * @param listener register listener on creation. <br>
      *                 Equal to call {@code registerListener()}.
      */
-    public GeneralScrapper(@NonNull String URL, @NonNull ListenerClass listener) {
+    public GeneralScraper(@NonNull String URL, @NonNull ListenerClass listener)
+    {
         this.registerListener(listener);
         this.mURL = URL;
     }
@@ -56,7 +58,7 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
 
     /**
      * Check if the thread is running.
-     * To initiate the thread, call {@code load()}
+     * To initiate the thread, call {@code load()}.
      *
      * @return true if the thread is currently running, false otherwise.
      */
@@ -66,18 +68,18 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
 
 
     /**
-     * Start network request to get the {@code Result}.
-     * If an listener is register up until the request is done and processed,
-     * he will be informed.
+     * Start network request to get {@code Result}.
+     * If a listener is register up until the request is done and processed,
+     * then he will be informed.
      * <p>
      * Calling this method while a request is still working, will result in no operation.
-     * The {@code isRunning()} method should help you with that.
+     * The {@code isRunning()} method should help determining that.
      */
     public final void load()
     {
         // If the scrapping running, do notting.
         if (this.mBackgroundThreadRunning) {
-            Log.i(TAG, "Try to scrapping thread while it is already on.");
+            Log.i(TAG, "Try to initiate new thread while one is already on.");
             return;
         }
 
@@ -86,14 +88,15 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
         Log.v(TAG, "Starting the background thread.");
 
         // Run the network request.
-        new BackgroundScrapper(mURL, new BackgroundListener());
+        new BackgroundScraper(this.mURL, new BackgroundListener());
     }
 
 
     /**
-     * Class that manages the background listener,
+     * Class that manages the background listener.
      */
-    private final class BackgroundListener implements BackgroundScrapperListener
+    private final class BackgroundListener
+            implements BackgroundScraperListener
     {
         /**
          * Called when the document is loaded successfully.
@@ -104,7 +107,7 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
         public void onDocument(@NonNull Connection.Response response)
         {
             try {
-                // Parse the response
+                // Parse the response.
                 Log.v(TAG, "Start parsing the page.");
 
                 mResult = processPage(response);
@@ -124,13 +127,8 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
 
         /**
          * Called on general error from the network communication.
-         * When this method is called, don't expect {@code onDocument()}
-         * to be called.
-         * <p>
-         * The exception can be: {@code MalformedURLException}, {@code HttpStatusException},
-         * {@code UnsupportedMimeTypeException}, {@code SocketTimeoutException} or {@code IOException}.
          *
-         * @param exception exception that describes the problem
+         * @param exception describes the problem.
          */
         @Override
         public void onError(@NonNull Exception exception)
@@ -139,7 +137,7 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
             callListenerOnError(exception);
 
             // Clear the flag.
-            Log.v(TAG, "Server is shutting down after unsuccessful scrap");
+            Log.v(TAG, "Server is shutting down after unsuccessful scrap.");
             mBackgroundThreadRunning = false;
         }
     }
@@ -149,7 +147,8 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
      * Process the webpage response to find the desired piece of data.
      *
      * @param response the loaded webpage.
-     * @return Result scrapped from the webpage.
+     * @return Result scraped from the webpage.
+     *
      * @throws WebParsingException on parsing conflict.
      */
     protected abstract Result processPage(@NonNull Connection.Response response)
@@ -157,7 +156,7 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
 
 
     /**
-     * This method return the last retrieved result.
+     * Return the last retrieved result.
      * This method does not create the loading operation itself,
      * for that call the {@code load()} method.
      *
@@ -182,7 +181,7 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
         {
             // Set the listener
             Log.v(TAG, "Set new listener.");
-            mListener = listener;
+            this.mListener = listener;
         }
     }
 
@@ -204,8 +203,8 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
 
 
     /**
-     * Calls the listener with result, the {@code onResult()} method,
-     * if presents a listener present, otherwise do notting.
+     * Calls the listener with result over the {@code onResult()} method
+     * if a listener present, otherwise do notting.
      *
      * @param result the parameter to pass to {@code onResult()}.
      */
@@ -215,7 +214,7 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
         {
             if (this.mListener != null)
             {
-                // Call the listener
+                // Call the listener.
                 Log.v(TAG, "Call listener onResult.");
                 this.mListener.onResult(result);
             }
@@ -224,8 +223,8 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
 
 
     /**
-     * Calls the listener with exception, the {@code onError()} method,
-     * if presents a listener present, otherwise do notting.
+     * Calls the listener with exception over the {@code onError()} method
+     * if a listener present, otherwise do notting.
      *
      * @param exception the parameter to pass to {@code onError()}.
      */
@@ -235,7 +234,7 @@ public abstract class GeneralScrapper<Result, ListenerClass extends GeneralListe
         {
             if (this.mListener != null)
             {
-                // Call the listener
+                // Call the listener.
                 Log.v(TAG, "Call listener on Error.");
                 this.mListener.onError(exception);
             }

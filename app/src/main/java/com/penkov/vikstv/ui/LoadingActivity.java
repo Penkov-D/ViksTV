@@ -17,8 +17,8 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.penkov.vikstv.R;
 import com.penkov.vikstv.core.ChannelInfo;
-import com.penkov.vikstv.web.Listener.ChannelListListener;
-import com.penkov.vikstv.web.Scrapper.ChannelListScrapper;
+import com.penkov.vikstv.web.Listener.ListenerChannelList;
+import com.penkov.vikstv.web.Scraper.ScraperChannelList;
 
 public class LoadingActivity extends AppCompatActivity
 {
@@ -30,8 +30,8 @@ public class LoadingActivity extends AppCompatActivity
     private ImageView loadingImageView;
 
     // Scrapping object
-    private final ChannelListScrapper channelListScrapper
-            = new ChannelListScrapper(new ChannelListHandler());
+    private final ScraperChannelList channelListScrapper
+            = new ScraperChannelList(new ChannelListHandler());
 
 
     /**
@@ -149,7 +149,7 @@ public class LoadingActivity extends AppCompatActivity
      * Class the serves as listener wrapper implementation -
      *   to call the inner methods.
      */
-    private class ChannelListHandler extends ChannelListListener
+    private class ChannelListHandler extends ListenerChannelList
     {
         @Override
         public void onResult(@NonNull ChannelInfo[] channelInfos)

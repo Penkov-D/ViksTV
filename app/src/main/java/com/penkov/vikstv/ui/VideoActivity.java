@@ -22,17 +22,16 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.penkov.vikstv.R;
 import com.penkov.vikstv.core.ChannelInfo;
 import com.penkov.vikstv.core.ChannelProgram;
-import com.penkov.vikstv.web.Listener.ChannelProgramListener;
-import com.penkov.vikstv.web.Listener.ChannelVideoUrlListener;
-import com.penkov.vikstv.web.Scrapper.ChannelProgramScrapper;
-import com.penkov.vikstv.web.Scrapper.ChannelVideoUrlScrapper;
+import com.penkov.vikstv.web.Listener.ListenerChannelProgram;
+import com.penkov.vikstv.web.Listener.ListenerChannelVideoURL;
+import com.penkov.vikstv.web.Scraper.ScraperChannelProgram;
+import com.penkov.vikstv.web.Scraper.ScraperChannelVideoURL;
 
 public class VideoActivity extends AppCompatActivity
 {
@@ -98,10 +97,10 @@ public class VideoActivity extends AppCompatActivity
         }
 
         // Load video link
-        new ChannelVideoUrlScrapper(
+        new ScraperChannelVideoURL(
                 this,
                 this.mChannelInfo.getChannelReference(),
-                new ChannelVideoUrlListener()
+                new ListenerChannelVideoURL()
                 {
                     @Override
                     public void onResult(@NonNull String url) {
@@ -116,9 +115,9 @@ public class VideoActivity extends AppCompatActivity
         ).load();
 
         // Load the programs
-        new ChannelProgramScrapper(
+        new ScraperChannelProgram(
                 this.mChannelInfo.getChannelReference(),
-                new ChannelProgramListener() {
+                new ListenerChannelProgram() {
                     @Override
                     public void onResult(@NonNull ChannelProgram[] channelPrograms) {
                         runOnUiThread(() -> onProgramsLoaded(channelPrograms));

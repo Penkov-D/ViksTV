@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import com.penkov.vikstv.web.base.GeneralListener;
 
 /**
- * Listener over the channels icons.
+ * Channel's icon request listener.
  */
-public abstract class ChannelIconListener
-    implements GeneralListener<Bitmap> { }
+public abstract class ListenerChannelIcon
+        implements GeneralListener<Bitmap> { }

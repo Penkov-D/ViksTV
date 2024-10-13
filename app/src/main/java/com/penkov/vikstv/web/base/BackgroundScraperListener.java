@@ -2,18 +2,20 @@ package com.penkov.vikstv.web.base;
 
 import androidx.annotation.NonNull;
 
-public interface GeneralListener<Result>
+import org.jsoup.Connection;
+
+public interface BackgroundScraperListener
 {
     /**
-     * Called when the parsing is done successfully.
+     * Called when the document is loaded successfully.
      *
-     * @param result the result of the parsing.
+     * @param response the web page asked from the scraper.
      */
-    void onResult(@NonNull Result result);
+    void onDocument(@NonNull Connection.Response response);
 
     /**
      * Called on general error from the network communication.
-     * When this method is called, don't expect {@code onResult()} to be called.
+     * When this method is called, don't expect {@code onDocument()} to be called.
      * <p>
      * The exception can be:
      * <ul>
