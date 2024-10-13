@@ -56,3 +56,9 @@ Application for both your phone and your TV! <br>
 
 For bugs or requests for features, let me know! <br>
 Если есть ошибки или запросы на функции, дайте мне знать!
+
+<h2>
+    Downlad / Скачайте
+</h2>
+
+https://github.com/Penkov-D/ViksTV/releases/download/AndroidTV/ViksTV.apk
