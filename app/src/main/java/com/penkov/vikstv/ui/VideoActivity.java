@@ -188,10 +188,13 @@ public class VideoActivity extends AppCompatActivity
     @Override
     public boolean dispatchKeyEvent(KeyEvent event)
     {
-        // In case of DPAD_CENTER,
-        if (event.getAction() == KeyEvent.ACTION_UP
-                && event.getKeyCode() == KeyEvent.KEYCODE_DPAD_CENTER) {
-            toggleProgramView(this.mVideoSurfaceView);
+        // In case of DPAD_CENTER, toggle the program list.
+        if (event.getKeyCode() == KeyEvent.KEYCODE_DPAD_CENTER)
+        {
+            // Toggle only when key is up, to suppress double toggle.
+            if (event.getAction() == KeyEvent.ACTION_UP)
+                toggleProgramView(this.mVideoSurfaceView);
+
             return true;
         }
 
